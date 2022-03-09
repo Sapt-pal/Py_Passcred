@@ -5,7 +5,7 @@ Created on Sat Sep  4 18:29:04 2021.
 @author: Saptarshi Pal
 @Project: Py PassCred PGaMA (Password Generator and Management Application)
 """
-'''
+
 import string
 import random
 lowstr = string.ascii_lowercase       #String of all lowercase letters
@@ -80,8 +80,8 @@ def wordspass():
       print(f"Your password has been generated!\n {s} \n Please preserve this carefully.")
   ans = input("Want to generate more such passwords? (y/n): ")
 
-complexpass(4)
-'''
+#Testing complexpass(4)
+
 
 # ___ RDBMS MODULE ____
 
