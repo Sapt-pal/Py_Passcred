@@ -5,15 +5,14 @@ window = Tk()  # Creating a window
 window.title("PyPassCred: Password Generator and Manager")  # Adding title for the window
 window.geometry("1240x1000")  # Setting geometry of the window
 
-head = Label(window, text="PyPassCred", font=("MONTSERRAT", 30))  # Creating a the heading
-# for the window
+head = Label(window, text="PyPassCred", font=("MONTSERRAT", 30))  # Creating a the heading for the window
 head.place(x=500, y=10)  # Placing the heading in the window
 
 # vertical = Scale(window, from_=0, to=200)
 # vertical.place(x=1200, y=0)
 
 
-def create_passfile():  # Creating a file to store passwords, username and site url
+def create_passfile():              # Creating a file to store passwords, username and site url
    with open("password.csv", 'w') as passfile:
        csvwriter = csv.writer(passfile)
        csvwriter.writerow(["WEBSITE", "USERNAME", "PASSWORD"])
@@ -60,14 +59,12 @@ def login():                                            # Function for login but
 login_button = Button(window, text="Login", padx=5, pady=3, command=login)
 login_button.place(x=920, y=92)
 
-create_label = Label(window, text="Click here to create a file to save password", font=("Calibri", 11))  # Creating a
-# label to identify create button
-create_label.place(x=35, y=85)  # Placing a label
-create = Button(window, text="Create", padx=5, pady=5, command=create_passfile)  # Creating a create button
-create.place(x=310, y=95)  # Placing the button
+create_label = Label(window, text="Click here to create a file to save password", font=("Calibri", 11))  # Creating a label to identify create button
+create_label.place(x=35, y=85)          # Placing a label
+create = Button(window, text="Create", padx=5, pady=5, command=create_passfile)         # Creating a create button
+create.place(x=310, y=95)                 # Placing the button
 caution = Label(window, text="(Caution: On clicking this button it will create a new file\n and all your existing "
-                            "password will be deleted)", font=("Calibri", 8), fg="red")  # Creating a caution label
-# to warn users
+                            "password will be deleted)", font=("Calibri", 8), fg="red")          # Creating a caution label to warn users
 caution.place(x=40, y=105)       # Placing caution
 
 
@@ -80,36 +77,34 @@ def insert_pass(listpass):           # Function to add passwords, site url and u
 
 # Random Password Frame
 
-frame_random = LabelFrame(window, text="Random Password Generator", padx=120, pady=57)  # A frame for generating
-# random password
-frame_random.place(x=40, y=150)  # Placing the frame
+frame_random = LabelFrame(window, text="Random Password Generator", padx=120, pady=57)  # A frame for generating a random password
+frame_random.place(x=40, y=150)        # Placing the frame
 
-url1 = Entry(frame_random, width=50)  # Creating an Entry widget for url
-url1_label = Label(frame_random, text="URL:")  # Entry label for url
-url1_label.grid(row=0, column=1)  # Placing the label
-url1.grid(row=0, column=2, columnspan=2)  # Placing the entry widget
+url1 = Entry(frame_random, width=50)                   # Creating an Entry widget for url
+url1_label = Label(frame_random, text="URL:")          # Entry label for url
+url1_label.grid(row=0, column=1)                       # Placing the label
+url1.grid(row=0, column=2, columnspan=2)               # Placing the entry widget
 
-username1 = Entry(frame_random, width=50)  # Creating an Entry widget for username
-username1_label = Label(frame_random, text="Username:")  # Entry label for username
-username1_label.grid(row=1, column=1)  # Placing the label
-username1.grid(row=1, column=2, columnspan=2)  # Placing the Entry widget
+username1 = Entry(frame_random, width=50)                     # Creating an Entry widget for username
+username1_label = Label(frame_random, text="Username:")       # Entry label for username
+username1_label.grid(row=1, column=1)                         # Placing the label
+username1.grid(row=1, column=2, columnspan=2)                 # Placing the Entry widget
 
 length_label = Label(frame_random, text="Length of the \npassword: ")  # Dropdown box label
-length_label.grid(row=2, column=1)  # Placing the label
+length_label.grid(row=2, column=1)                                     # Placing the label
 
 
-def callback(selection):  # Func to get the value from the dropdown box
+def callback(selection):         # Func to get the value from the dropdown box
    global choice
    choice = selection
 
 
 clicked = IntVar()
-drop = OptionMenu(frame_random, clicked, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, command=callback)
-# Creating a dropdown box
-drop.grid(row=2, column=2)  # Placing the dropdown box
+drop = OptionMenu(frame_random, clicked, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, command=callback)      # Creating a dropdown box
+drop.grid(row=2, column=2)           # Placing the dropdown box
 
 
-def generate_button():  # Func to generate random strong password
+def generate_button():            # Func to generate random strong password
    global choice, list1
 
    from random import randint
@@ -123,7 +118,7 @@ def generate_button():  # Func to generate random strong password
        passwd = str(passwd) + i
        list1 = [website, usern, passwd]
 
-   insert_pass(list1)  # Inserting the password to the file
+   insert_pass(list1)         # Inserting the password to the file
 
    password_label = Label(frame_random, text="Generated password for %s is: " % website)
    label = Label(frame_random, text=passwd)
@@ -131,9 +126,9 @@ def generate_button():  # Func to generate random strong password
    password_label.grid(row=3, column=2)
    label.grid(row=4, column=2)
 
-   url1.delete(0, END)  # Removing the entries from url entry
+   url1.delete(0, END)         # Removing the entries from url entry
 
-   username1.delete(0, END)  # Removing the entries from username entry
+   username1.delete(0, END)      # Removing the entries from username entry
 
 
 generate = Button(frame_random, text="Generate", command=generate_button)  # Creating a generate button
@@ -165,8 +160,7 @@ def save():  # Func to arrange the passwords in list and save the list in the fi
    for i in [file_password_custom]:
        password_custom_string += i
 
-   passlist = [url_string, username_string, password_custom_string]  # A list containing username site url and
-   # password is created
+   passlist = [url_string, username_string, password_custom_string]  # A list containing username site url and password is created
 
    insert_pass(passlist)
 
