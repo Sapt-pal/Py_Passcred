@@ -8,81 +8,117 @@ Created on Sat Sep  4 18:29:04 2021.
 
 import string
 import random
-lowstr = string.ascii_lowercase       #String of all lowercase letters
-uppStr = string.ascii_uppercase       #String of all uppercase letters
-intStr = "01234565789"                #String of all numerals
-speLst = ["~","`","@","#","$","%","&","*","(",")","-","_","=","+","{","}","|","?","<",">",",",".","/",":",";"]
-#List of some commonly found special characters in a standard keyboard: "~`!@#$%^&*()_-+={[}]|\ : ;"'<,>.?/"  #Note: "\" has been ommitted for in-compatibility issues with Python syntax
 
-def spexc(s):
-  """This function exculdes certain special characters from the password to be generated to avoid interference with softwares' code."""
-  print("Some systems don't allow certain special characters in passwords")
-  ans = input("Do you want some special characters to be excluded from your passwords? (y/n) : ")
-  while ans == "y":
-    try:
-      exc = input("Please enter the character to be removed: ")
-      speLst.remove("exc")
-      print(f"New list of special characters after exculding {exc} is {speLst}")
-      ans = input("More characters to be excluded?(y/n): ")
-    except:
-      print(f"No such character {exc} found. Please try again")
-      ans = input("Try again?(y/n): ")
+LowStr = string.ascii_lowercase  # String of all lowercase letters
+uppStr = string.ascii_uppercase  # String of all uppercase letters
+intStr = "01234565789"  # String of all numerals
+speLst = [
+    "~",
+    "`",
+    "@",
+    "#",
+    "$",
+    "%",
+    "&",
+    "*",
+    "(",
+    ")",
+    "-",
+    "_",
+    "=",
+    "+",
+    "{",
+    "}",
+    "|",
+    "?",
+    "<",
+    ">",
+    ",",
+    ".",
+    "/",
+    ":",
+    ";",
+]
+# List of some commonly found special characters in a standard keyboard: "~`!@#$%^&*()_-+={[}]|\ : ;"'<,>.?/"  #Note: "\" has been ommitted for in-compatibility issues with Python syntax
 
 
+def spexc(speLst):
+    """This function exculdes certain special characters from the password to be generated to avoid interference with softwares' code."""
+    print("Some systems don't allow certain special characters in passwords")
+    ans = input(
+        "Do you want some special characters to be excluded from your passwords? (y/n) : "
+    )
+    while ans == "y":
+        try:
+            exc = input("Please enter the character to be removed: ")
+            speLst.remove("exc")
+            print(f"New list of special characters after exculding {exc} is {speLst}")
+            ans = input("More characters to be excluded?(y/n): ")
+        except:
+            print(f"No such character {exc} found. Please try again")
+            ans = input("Try again?(y/n): ")
 
-#Inserts random strings
+
+# Inserts random strings
 def strinsert(s):
-  x = random.randint(1,3)
-  for i in range(x):
-    x2 = random.randint(1,2)
-    if x2 == 1:
-      s += random.choice(lowstr)
-    else:
-      s += random.choice(uppstr)
-  return s
+    x = random.randint(1, 3)
+    for i in range(x):
+        x2 = random.randint(1, 2)
+        if x2 == 1:
+            s += random.choice(LowStr)
+        else:
+            s += random.choice(uppStr)
+    return s
 
-#Inserts random numbers
+
+# Inserts random numbers
 def intinsert(s):
-  x = random.randint(1,3)
-  for i in range(x):
-    s += random.choice(intstr)
-  return s
+    x = random.randint(1, 3)
+    for i in range(x):
+        s += random.choice(intStr)
+    return s
 
-#Generates complex passwords
+
+# Generates complex passwords
 def complexpass(n):
-  s = ""
-  for i in range(n):
-    s = strinsert(s)
-    s = intinsert(s)
-  print(s,list(s))
+    s = ""
+    for i in range(n):
+        s = strinsert(s)
+        s = intinsert(s)
+    print(s, list(s))
+
 
 def remlist():
-  n = int(input("Enter number of such words you have in your mind: "))
-  l = [input(f"Enter the word{i+1}: ") for i in range(n)]
-  return n,l
+    n = int(input("Enter number of such words you have in your mind: "))
+    l = [input(f"Enter the word{i+1}: ") for i in range(n)]
+    return n, l
 
-#Generates passwords based on certain rememberable words input by user
+
+# Generates passwords based on certain rememberable words input by user
 def wordspass():
-  s = ""
-  opt = input("Custom or default (8) length password? (cust/defa): ")
-  if opt == "cust":
-    ln = int(input("Enter length of password: "))
-  else:
-    ln = 8
+    s = ""
+    opt = input("Custom or default (8) length password? (cust/defa): ")
+    if opt == "cust":
+        ln = int(input("Enter length of password: "))
+    else:
+        ln = 8
+    n,l = remlist()
+    ans = "y"
+    while ans == "y":
+        while len(s) < ln:
+            x = random.randint(0, n - 1)
+            s += l[x]
+            s = strinsert(s)
+            s = intinsert(s)
+            print(
+                f"Your password has been generated!\n {s} \n Please preserve this carefully."
+            )
+    ans = input("Want to generate more such passwords? (y/n): ")
 
-  ans = "y"
-  while ans == "y":
-    while len(s) < ln:
-      x = random.randint(0,n-1)
-      s += l[x]
-      s = strinsert(s)
-      s = intinsert(s)
-      print(f"Your password has been generated!\n {s} \n Please preserve this carefully.")
-  ans = input("Want to generate more such passwords? (y/n): ")
 
-#Testing complexpass(4)
+complexpass(4)
 
-
+'''
 # ___ RDBMS MODULE ____
 
 # __Data Storage and retrieval module below__
@@ -165,6 +201,8 @@ def usr_input(pswd="y"):
         pswd = input("Enter password: ")
         pswd_nat = "Custom"
     else:
-        # pswd = '''Call the password generator func here'''
+        # pswd = Call the password generator func here
         pswd_nat = "Random"
     data_entry(sName, sURL, uName, pswd, pswd_nat)
+'''
+
