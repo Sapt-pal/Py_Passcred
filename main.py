@@ -51,13 +51,12 @@ def spexc(speLst):
     while ans == "y":
         try:
             exc = input("Please enter the character to be removed: ")
-            speLst.remove(exc)
+            speLst.remove("exc")
             print(f"New list of special characters after exculding {exc} is {speLst}")
             ans = input("More characters to be excluded?(y/n): ")
         except:
             print(f"No such character {exc} found. Please try again")
             ans = input("Try again?(y/n): ")
-
 
 
 # Inserts random strings
@@ -79,12 +78,6 @@ def intinsert(s):
         s += random.choice(intStr)
     return s
 
-# Inserts random symbols
-def syminsert(s):
-    x = random.randint(1, 3)
-    for i in range(x):
-        s += random.choice(speLst)
-    return s
 
 # Generates complex passwords
 def complexpass(n):
@@ -92,32 +85,38 @@ def complexpass(n):
     for i in range(n):
         s = strinsert(s)
         s = intinsert(s)
-        s = syminsert(s)
-    return s
+    print(s, list(s))
+
+
+def remlist():
+    n = int(input("Enter number of such words you have in your mind: "))
+    l = [input(f"Enter the word{i+1}: ") for i in range(n)]
+    return n, l
 
 
 # Generates passwords based on certain rememberable words input by user
 def wordspass():
     s = ""
-    opt = input("If you want to make a custom password, type 'custom'. \nIf you want to generate a random password, just press enter: ")
-    if opt == "custom":
-        s = input("Enter your custom password: ")
+    opt = input("Custom or default (8) length password? (cust/defa): ")
+    if opt == "cust":
+        ln = int(input("Enter length of password: "))
     else:
-        Ln = int(input("Enter the length of required password: "))
-        while len(s) < Ln:
-            x = random.randint(0, Ln - 6)
-            s = complexpass(x)
-        print(
-            f"Your password has been generated!\n {s} \n Please preserve this carefully."
-        )
-    return s
+        ln = 8
+    n,l = remlist()
+    ans = "y"
+    while ans == "y":
+        while len(s) < ln:
+            x = random.randint(0, n - 1)
+            s += l[x]
+            s = strinsert(s)
+            s = intinsert(s)
+            print(
+                f"Your password has been generated!\n {s} \n Please preserve this carefully."
+            )
+    ans = input("Want to generate more such passwords? (y/n): ")
 
 
-#complexpass(4)
-
-spexc(speLst)
-
-password = wordspass()
+complexpass(4)
 
 '''
 # ___ RDBMS MODULE ____
