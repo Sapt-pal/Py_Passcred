@@ -204,7 +204,7 @@ def UI():
     while choice != "exit":
         if choice == "1":
             pswd = complexpass(int(input("Enter desired length of password")))
-            print(f"{pswd}is your password.")
+            print(f"{pswd}is your password.\n")
             choice = menu()
         elif choice == "2":
             sName, sURL, uName = cred()
