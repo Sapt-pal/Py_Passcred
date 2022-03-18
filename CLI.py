@@ -51,10 +51,10 @@ def spexc(speLst):
     while ans == "y":
         try:
             exc = input("Please enter the character to be removed: ")
-            speLst.remove("exc")
+            speLst.remove(exc)
             print(f"New list of special characters after exculding {exc} is {speLst}")
             ans = input("More characters to be excluded?(y/n): ")
-        except:
+        except ValueError:
             print(f"No such character {exc} found. Please try again")
             ans = input("Try again?(y/n): ")
 
@@ -78,6 +78,12 @@ def intinsert(s):
         s += random.choice(intStr)
     return s
 
+# Inserts random symbols
+def syminsert(s):
+    x = random.randint(1, 3)
+    for i in range(x):
+        s += random.choice(speLst)
+    return s
 
 # Generates complex passwords
 def complexpass(n):
@@ -85,40 +91,57 @@ def complexpass(n):
     for i in range(n):
         s = strinsert(s)
         s = intinsert(s)
-    print(s, list(s))
+        s = syminsert(s)
+    return s
 
-
-def remlist():
-    n = int(input("Enter number of such words you have in your mind: "))
-    l = [input(f"Enter the word{i+1}: ") for i in range(n)]
-    return n, l
-
-
-# Generates passwords based on certain rememberable words input by user
+# Generates passwords
 def wordspass():
     s = ""
-    opt = input("Custom or default (8) length password? (cust/defa): ")
+    opt = input("Custom or default password? (cust/defa): ")
     if opt == "cust":
-        ln = int(input("Enter length of password: "))
+        nat = "Custom"
+        ans = "n"
+        s = input("Enter password: ")
     else:
-        ln = 8
-    n,l = remlist()
-    ans = "y"
+        nat = "Random"
+        ans = "y"
+        Ln = int(input("Enter desired length of password: "))
     while ans == "y":
-        while len(s) < ln:
-            x = random.randint(0, n - 1)
-            s += l[x]
+        while len(s) < Ln:
             s = strinsert(s)
             s = intinsert(s)
-            print(
-                f"Your password has been generated!\n {s} \n Please preserve this carefully."
-            )
-    ans = input("Want to generate more such passwords? (y/n): ")
+            s = syminsert(s)
+        print(
+            f"Your password has been generated!\n {s} \n Please preserve this carefully."
+        )
+    return s,nat
+
+# User Credentials
+def cred():
+    sName = input("Enter Site Name: ")
+    sURL = input("Enter Site URL: ")
+    uName = input("Enter Username: ")
+    return sName,sURL,uName
 
 
-complexpass(4)
+# UI / UX
+def UI():
+    flag = "y"
+    while flag == "y":
+        print("Welcome to Py_PassCred!\n")
+        input("Please log in to your SQL interface apriori...\nEnter to continue...\n")
+        sName,sURL,uName = cred()
+        pswd,nat = wordspass()
+        print("Please note RDBMS database 'Py_PassCred' table 'passwords_data' will be used.\n")
+        print("Switching to RDBMS module SQL database...\n")
+        data_entry(sName, sURL, uName, pswd, nat)
+        flag = input("Want to generate more such passwords? (y/n): ")
+        print("Exiting application.\nBye!")
+    return "Exit"
 
-'''
+
+
+
 # ___ RDBMS MODULE ____
 
 # __Data Storage and retrieval module below__
@@ -141,10 +164,7 @@ def data_entry(site_name, site_URL, username, password, password_nature="Custom"
     """
     Actual insertion of data into RDBMS.
 
-    To be called inside "usr_input()" after taking all credentials from user.
-
-    If custom password was set, no value for password_nature to be passed.
-    Else if random password was set, pass password_nature as "Random"
+    To be called inside "UI()" after taking all credentials from user.
 
     Parameters
     ----------
@@ -157,7 +177,7 @@ def data_entry(site_name, site_URL, username, password, password_nature="Custom"
     password : STRING
         .
     password_nature : STRING, optional
-        DESCRIPTION. The default is "Custom".
+        DESCRIPTION. default "Custom".
 
     Returns
     -------
@@ -172,37 +192,7 @@ def data_entry(site_name, site_URL, username, password, password_nature="Custom"
         sql_cursor.execute(data_entry)
         conn_obj.commit()
         print("Your data was entered.")
-    except:
+    except (sql_conn.ProgrammingError, sql_conn.IntegrityError):
         err = "Only one password per URL is allowed for data integrity\n Please try again with a unique URL"
         print(err)
-
-
-def usr_input(pswd="y"):
-    """
-    Take credentials from user to be input in the DB.
-
-    If random password to be generated, pass pswd = "n" in function call.
-    Else if custom password input by user, no value required to be passed.
-
-    Parameters
-    ----------
-    pswd : STRING, optional
-        DESCRIPTION. The default is "y".
-
-    Returns
-    -------
-    None.
-
-    """
-    sName = input("Enter Site Name: ")
-    sURL = input("Enter Site URL: ")
-    uName = input("Enter Username: ")
-    if pswd == "y":
-        pswd = input("Enter password: ")
-        pswd_nat = "Custom"
-    else:
-        # pswd = Call the password generator func here
-        pswd_nat = "Random"
-    data_entry(sName, sURL, uName, pswd, pswd_nat)
-'''
 
