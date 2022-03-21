@@ -1,0 +1,340 @@
+from tkinter import *  # Importing Tkinter module for GUI
+import mysql.connector as sql_conn
+
+conn_obj = sql_conn.connect(host="localhost", user="root", passwd="@IshanDas10")
+sql_cursor = conn_obj.cursor()
+
+window = Tk()  # Creating a window
+window.title("PyPassCred: Password Generator and Manager")  # Adding title for the window
+window.geometry("1240x1000")  # Setting geometry of the window
+
+head = Label(window, text="PyPassCred", font=("Garamond", 30))  # Creating a heading for the window
+head.place(x=500, y=10)  # Placing the heading in the window
+
+
+def create_db():  # Creating a database to store passwords, username and site url
+    if conn_obj.is_connected():
+        sql_cursor.execute("CREATE DATABASE IF NOT EXISTS Py_PassCred")
+        sql_cursor.execute("USE Py_PassCred")
+        table = """CREATE TABLE IF NOT EXISTS passwords_data (
+        SNo INTEGER AUTO_INCREMENT PRIMARY KEY, 
+        site_URL VARCHAR(50),
+        username VARCHAR(20), 
+        password VARCHAR(20), 
+        password_nature VARCHAR(20) ) """
+        sql_cursor.execute(table)
+
+
+def enable():  # Enabling all the frames and Create Button
+    for frame in frames:
+
+        for i in frame.winfo_children():
+            i.configure(state='normal')
+
+    create.configure(state='normal')
+
+
+login_label = Label(window, text="")
+
+master_password = Entry(window, width=50)  # Entry field for Master Password
+master_password.place(x=600, y=95)
+master_label = Label(window, text="Master Password:", font=("Times New Roman", 11))
+master_label.place(x=500, y=95)
+
+
+# Function for login button
+def login():
+    global create
+    global login_label
+    masterpass = master_password.get()
+
+    if masterpass == "ishanrocks":
+
+        enable()
+
+        login_label.config(text="**Success**", fg="blue")
+        login_label.place(x=690, y=110)
+
+        login_label.after(3000, login_label.destroy)
+
+        master_password.delete(0, END)
+    else:
+        login_label.config(text="**Wrong Password**", fg="red")
+        login_label.place(x=690, y=110)
+
+
+login_button = Button(window, text="Login", padx=5, pady=3, command=login)
+login_button.place(x=920, y=92)
+
+# Creating a button to create a new database and table
+
+create_label = Label(window, text="Click here to create a database and table \n(if already does not exist)", font=("Times New Roman", 11))
+create_label.place(x=35, y=85)
+create = Button(window, text="Create", padx=5, pady=5, command=create_db)  # Creating a create button
+create.place(x=310, y=95)
+
+
+# Random Password Frame
+# A Frame for generating strong passwords and storing them into database
+
+frame_random = LabelFrame(window, text="Random Password Generator", padx=120, pady=57)
+frame_random.place(x=40, y=150)  # Placing the frame
+
+url1 = Entry(frame_random, width=50)  # Creating an Entry widget for url
+url1_label = Label(frame_random, text="URL:")  # Entry label for url
+url1_label.grid(row=0, column=1)  # Placing the label
+url1.grid(row=0, column=2, columnspan=2)  # Placing the entry widget
+
+username1 = Entry(frame_random, width=50)  # Creating an Entry widget for username
+username1_label = Label(frame_random, text="Username:")  # Entry label for username
+username1_label.grid(row=1, column=1)  # Placing the label
+username1.grid(row=1, column=2, columnspan=2)  # Placing the Entry widget
+
+length_label = Label(frame_random, text="Length of the \npassword: ")  # Dropdown box label
+length_label.grid(row=2, column=1)  # Placing the label
+
+
+# Function to get the value from the dropdown box
+def callback(selection):
+    global choice
+    choice = selection
+
+
+# Creating a dropdown box and placing it
+num_list = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+clicked = IntVar()
+drop = OptionMenu(frame_random, clicked, *num_list, command=callback)
+drop.grid(row=2, column=2)
+
+
+def data_entry(site_URL, username, password, password_nature):
+    import mysql.connector as sql_conn
+
+    conn_obj = sql_conn.connect(host="localhost", user="root", passwd="@IshanDas10", db="py_passcred")
+    sql_cursor = conn_obj.cursor()
+
+    query = f"INSERT INTO passwords_data (site_url, username, password, password_nature)  VALUES (%s, %s, %s, %s)"
+
+    val = (site_URL, username, password, password_nature)
+
+    try:
+        sql_cursor.execute(query, val)
+        conn_obj.commit()
+        sql_cursor.close()
+    except Exception as e:
+        conn_obj.rollback()
+        conn_obj.close()
+
+
+# Function to generate random strong password
+def generate_button():
+    global choice
+
+    from random import randint
+
+    website = url1.get()
+    usern = username1.get()
+    passwd = ''
+
+    for i in range(choice):
+        i = chr(randint(33, 126))
+        passwd = str(passwd) + i
+
+    data_entry(website, usern, passwd, 'Random')
+
+    password_label = Label(frame_random, text="Generated password for %s is: " % website)
+    label = Label(frame_random, text=passwd)
+
+    password_label.grid(row=3, column=2)
+    label.grid(row=4, column=2)
+
+    url1.delete(0, END)  # Removing the entries from url entry
+
+    username1.delete(0, END)  # Removing the entries from username entry
+
+
+generate = Button(frame_random, text="Generate", command=generate_button)  # Creating a generate button
+generate.grid(row=2, column=3)  # Placing the button
+
+# Custom Password Frame
+# A frame for entering custom password
+
+frame_custom = LabelFrame(window, text="Custom Password", padx=130, pady=77)
+frame_custom.place(x=40, y=430)
+
+
+# Function to insert the custom data into database
+def save():
+    global url
+    global username
+    global password_custom
+
+    file_url = url.get()
+    url_string = ''
+    for i in [file_url]:
+        url_string += i
+
+    file_username = username.get()
+    username_string = ''
+    for i in [file_username]:
+        username_string += i
+
+    file_password_custom = password_custom.get()
+    password_custom_string = ''
+    for i in [file_password_custom]:
+        password_custom_string += i
+
+    data_entry(url_string, username_string, password_custom_string, "Custom")
+
+    mssg = Label(frame_custom, text="The password has been recorded in the database")
+    mssg.grid(row=4, column=2)
+
+
+# Function to remove entries from the entry widgets
+def new():
+    url.delete(0, END)
+    username.delete(0, END)
+    password_custom.delete(0, END)
+
+
+# Creating an Entry widget for url
+url = Entry(frame_custom, width=50)
+url_label = Label(frame_custom, text="URL:")
+url_label.grid(row=0, column=1)
+url.grid(row=0, column=2, columnspan=2)
+
+# Creating an Entry widget for username
+username = Entry(frame_custom, width=50)
+username_label = Label(frame_custom, text="Username:")
+username_label.grid(row=1, column=1)
+username.grid(row=1, column=2, columnspan=2)
+
+# Creating an Entry widget for password
+password_custom = Entry(frame_custom, width=50)
+password_custom_label = Label(frame_custom, text="Password:")
+password_custom_label.grid(row=2, column=1)
+password_custom.grid(row=2, column=2, columnspan=2)
+
+# Creating a save button
+save_button = Button(frame_custom, text="Save", padx=5, pady=5, command=save)
+save_button.grid(row=3, column=2)
+
+# Creating a New Entry button
+new_button = Button(frame_custom, text="New entry", padx=5, pady=5, command=new)
+new_button.grid(row=3, column=3)
+
+
+# View Password Frame
+# A frame to retrieve the stored password from database
+
+def view_pw():
+    conn_obj = sql_conn.connect(host="localhost", user="root", passwd="@IshanDas10", db="py_passcred")
+    sql_cursor = conn_obj.cursor()
+
+    view_url = url_retrieve.get()
+    view_usern = username_retrieve.get()
+
+    query = f"""SELECT password FROM passwords_data where site_URL = '{view_url}' and username = '{view_usern}'"""
+
+    try:
+        sql_cursor.execute(query)
+        p = sql_cursor.fetchone()
+        pw = p[0]
+        conn_obj.commit()
+        sql_cursor.close()
+    except Exception as e:
+        conn_obj.rollback()
+        conn_obj.close()
+
+    url_retrieve.delete(0, END)
+    username_retrieve.delete(0, END)
+
+    disp_pw = Label(view_frame, text=f'Password for {view_url} is {pw}')
+    disp_pw.grid(row=3, column=2)
+
+
+view_frame = LabelFrame(window, text="View Password", padx=140, pady=65)
+view_frame.place(x=695, y=150)
+
+# Creating an Entry widget for url
+url_retrieve = Entry(view_frame, width=35)
+url_retrieve_label = Label(view_frame, text="URL:")
+url_retrieve_label.grid(row=0, column=1)
+url_retrieve.grid(row=0, column=2, columnspan=2)
+
+# Creating an Entry widget for username
+username_retrieve = Entry(view_frame, width=35)
+username_retrieve_label = Label(view_frame, text="Username:")
+username_retrieve_label.grid(row=1, column=1)
+username_retrieve.grid(row=1, column=2, columnspan=2)
+
+# Creating a Button to view the password
+view_button = Button(view_frame, text="View Password", command=view_pw)
+view_button.grid(row=2, column=2)
+
+
+# Update Password frame
+# A frame to update and change the password
+
+def update_pswd():
+    import mysql.connector as sql_conn
+
+    conn_obj = sql_conn.connect(host="localhost", user="root", passwd="@IshanDas10", db="py_passcred")
+    sql_cursor = conn_obj.cursor()
+
+    url_upfunc = update_url.get()
+    usern_upfunc = username_update.get()
+    old_pw = old_password.get()
+    new_pw = new_password.get()
+
+    exc = f"""UPDATE passwords_data set password = '{new_pw}' 
+    where site_URL = '{url_upfunc}'
+    and username = '{usern_upfunc}'
+    and password = '{old_pw}'"""
+    try:
+        sql_cursor.execute(exc)
+        conn_obj.commit()
+        sql_cursor.close()
+    except Exception as e:
+        conn_obj.rollback()
+        conn_obj.close()
+
+    url_upfunc.delete(0, END)
+    usern_upfunc.delet(0, END)
+    old_pw.delete(0, END)
+    new_pw.delete(0, END)
+
+
+update_frame = LabelFrame(window, text="Update Password", padx=130, pady=77)  # A frame for entering custom password
+update_frame.place(x=695, y=430)
+
+update_url = Entry(update_frame, width=35)  # Creating an Entry widget for url
+update_url_label = Label(update_frame, text="URL:")
+update_url_label.grid(row=0, column=1)
+update_url.grid(row=0, column=2, columnspan=2)
+
+username_update = Entry(update_frame, width=35)  # Creating an Entry widget for username
+username_update_label = Label(update_frame, text="Username:")
+username_update_label.grid(row=1, column=1)
+username_update.grid(row=1, column=2, columnspan=2)
+
+old_password = Entry(update_frame, width=35)  # Creating an Entry widget for old password
+old_password_label = Label(update_frame, text="Old Password:")
+old_password_label.grid(row=2, column=1)
+old_password.grid(row=2, column=2, columnspan=2)
+
+new_password = Entry(update_frame, width=35)  # Creating an Entry widget for new password
+new_password_label = Label(update_frame, text="New Password:")
+new_password_label.grid(row=3, column=1)
+new_password.grid(row=3, column=2, columnspan=2)
+
+update_button = Button(update_frame, text="Update Password", command=update_pswd)
+update_button.grid(row=4, column=2)
+
+frames = [frame_custom, frame_random, view_frame, update_frame]
+for frame in frames:
+    for child in frame.winfo_children():  # Disabling Custom Password Frame
+        child.configure(state='disable')
+create.configure(state="disable")  # Disabling Create button
+
+window.mainloop()
