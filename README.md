@@ -1,5 +1,9 @@
 # -*- Py_Passcred -*-
 
+![GitHub last commit](https://img.shields.io/github/last-commit/Sapt-pal/Py_Passcred/?style=for-the-badge)
+<br>
+<br>
+<br>
 [![CodeFactor](https://www.codefactor.io/repository/github/sapt-pal/py_passcred/badge)](https://www.codefactor.io/repository/github/sapt-pal/py_passcred)
 
 #### Py_PassCred PGaMA (Password Generator and Management Application)
